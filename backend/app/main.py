@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from backend.app.routes.customers import router as customers_router
+from backend.app.routes.field_visits import router as field_visits_router
 from backend.app.routes.opportunities import router as opportunities_router
 
 
@@ -11,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(customers_router)
+app.include_router(field_visits_router)
 app.include_router(opportunities_router)
 
 
