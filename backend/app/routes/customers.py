@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
+from backend.app.auth.dependencies import require_role
 from backend.app.database import get_connection
 from backend.app.routes.activities import ACTIVITY_COLUMNS, _serialize_activity
 from backend.app.routes.field_visits import (
@@ -16,6 +17,7 @@ from backend.app.routes.opportunities import (
 router = APIRouter(
     prefix="/api/v1/customers",
     tags=["Customers"],
+    dependencies=[Depends(require_role("SYSTEM_ADMIN", "SALES_MANAGER", "FIELD_SALES"))],
 )
 
 

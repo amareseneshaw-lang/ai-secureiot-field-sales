@@ -183,6 +183,23 @@ tr.activity-row:hover { background: #fafcff; }
 .activity-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
 .visit-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
 
+.sidebar-user { border-top: 1px solid #273855; margin: auto 8px 0; padding-top: 17px; }
+.sidebar-user-info { display: grid; gap: 2px; margin-bottom: 10px; padding: 0 2px; }
+.sidebar-user-info strong { color: #fff; font-size: .85rem; }
+.sidebar-user-info span { color: #8fa2c0; font-size: .72rem; }
+.sidebar-logout { background: #1a2a47; border: 1px solid #2d3f60; border-radius: 8px; color: #d7e2f6; cursor: pointer; font-size: .78rem; font-weight: 700; padding: 8px 10px; width: 100%; }
+.sidebar-logout:hover { background: #22355a; }
+
+.login-screen { align-items: center; background: #f5f7fb; display: flex; justify-content: center; min-height: 100vh; padding: 24px; }
+.login-card { background: #fff; border: 1px solid #e0e7f1; border-radius: 16px; box-shadow: 0 12px 32px #233d6518; display: grid; gap: 14px; max-width: 380px; padding: 36px 32px; width: 100%; }
+.login-brand { color: #152138; margin: 0 0 4px; text-decoration: none; }
+.login-card h1 { font-size: 1.7rem; margin: 4px 0 0; }
+.login-card .page-intro { margin: 0 0 6px; }
+.login-card input { background: #f8fafd; border: 1px solid #d9e2f0; border-radius: 8px; color: #25364f; font-size: .92rem; padding: 12px 14px; width: 100%; }
+.login-card input:focus { border-color: #2d79c8; outline: none; }
+.login-submit { justify-self: stretch; margin-top: 6px; padding: 12px 14px; text-align: center; }
+.login-error { background: #fdeaea; border-radius: 8px; color: #a52a2a; font-size: .84rem; padding: 10px 12px; }
+
 @media (max-width: 760px) {
   .filters-row { flex-direction: column; align-items: stretch; }
   .metric-grid--quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -192,7 +209,7 @@ tr.activity-row:hover { background: #fafcff; }
   .sidebar { min-height: auto; padding: 14px 16px; }
   .brand { margin: 0 0 15px; }
   .primary-nav { display: flex; overflow-x: auto; }
-  .nav-label, .nav-item small, .sidebar-footer { display: none; }
+  .nav-label, .nav-item small, .sidebar-footer, .sidebar-user { display: none; }
   .nav-item { flex: 0 0 auto; }
   .main-content { padding: 28px 18px; }
   .page-header { align-items: flex-start; flex-direction: column; margin-bottom: 24px; }

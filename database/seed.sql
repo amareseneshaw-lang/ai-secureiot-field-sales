@@ -38,8 +38,10 @@ INSERT INTO permissions (permission_name, description) VALUES
 -- USERS
 -- =========================================================
 
--- Demo password hashes only.
--- These are placeholders for development and are NOT real passwords.
+-- Local-development demo accounts only. These are NOT production users.
+-- Each password_hash below is a real bcrypt hash (cost 12) of a documented
+-- demo password. See docs/AUTH_DEMO_CREDENTIALS.md for the plaintext
+-- passwords used to log in to these accounts during local development.
 
 INSERT INTO users
 (username, email, password_hash, first_name, last_name, phone, status)
@@ -47,7 +49,7 @@ VALUES
 (
     'admin_demo',
     'admin@example.invalid',
-    'DEMO_HASH_ADMIN',
+    '$2b$12$kbSlKguRArWaSyi0gOeQoOfT/QiZ0GNlzY99NyWAK4MQ6rzVK9KXa',
     'Jordan',
     'Reed',
     '555-0101',
@@ -56,7 +58,7 @@ VALUES
 (
     'sales_manager_demo',
     'sales.manager@example.invalid',
-    'DEMO_HASH_MANAGER',
+    '$2b$12$USTC8FBbvll5I.WlB3JkJ.Wqg9u2owCzl9qPSH635U0uxwW.o/CwO',
     'Taylor',
     'Morgan',
     '555-0102',
@@ -65,7 +67,7 @@ VALUES
 (
     'field_sales_demo',
     'field.sales@example.invalid',
-    'DEMO_HASH_SALES',
+    '$2b$12$NVNKhHdf6Af3HDZ/MwnH0.VTS3dYYuYNb4jne.nMyRI5dTsfsDDVe',
     'Casey',
     'Brooks',
     '555-0103',
@@ -74,7 +76,7 @@ VALUES
 (
     'security_admin_demo',
     'security@example.invalid',
-    'DEMO_HASH_SECURITY',
+    '$2b$12$kygqRwkCuoHnVchNqg1jcOlEdj6dNmrnFlDlzDwGvf1ld0xdMJXQu',
     'Morgan',
     'Lee',
     '555-0104',
@@ -83,7 +85,7 @@ VALUES
 (
     'technician_demo',
     'technician@example.invalid',
-    'DEMO_HASH_TECH',
+    '$2b$12$NNQtz7QJHKVSCkhhC06vuOhkFWwowe8voURdUtz9cs77CZUeWP54C',
     'Alex',
     'Parker',
     '555-0105',

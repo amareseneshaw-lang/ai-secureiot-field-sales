@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 
 import { ActivitiesPage } from "./pages/ActivitiesPage";
 import { AppShell } from "./components/AppShell";
+import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { Customer360Page } from "./pages/Customer360Page";
 import { CustomersPage } from "./pages/CustomersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { FieldVisitsPage } from "./pages/FieldVisitsPage";
+import { LoginPage } from "./pages/LoginPage";
 import { OpportunitiesPage } from "./pages/OpportunitiesPage";
 import { ReportsPage } from "./pages/ReportsPage";
 
@@ -34,7 +36,7 @@ function currentRoute(): Route {
   return { page: "dashboard" };
 }
 
-export default function App() {
+function AuthenticatedApp() {
   const [route, setRoute] = useState<Route>(currentRoute);
 
   useEffect(() => {
@@ -55,5 +57,18 @@ export default function App() {
       {route.page === "customer360" && <Customer360Page customerId={route.customerId} />}
       {route.page === "dashboard" && <DashboardPage />}
     </AppShell>
+  );
+}
+
+function AuthGate() {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <AuthenticatedApp /> : <LoginPage />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
   );
 }

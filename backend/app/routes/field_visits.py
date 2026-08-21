@@ -1,14 +1,16 @@
 from datetime import date, datetime, timedelta
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from backend.app.auth.dependencies import require_role
 from backend.app.database import get_connection
 
 
 router = APIRouter(
     prefix="/api/v1/field-visits",
     tags=["Field Visits"],
+    dependencies=[Depends(require_role("SYSTEM_ADMIN", "SALES_MANAGER", "FIELD_SALES"))],
 )
 
 

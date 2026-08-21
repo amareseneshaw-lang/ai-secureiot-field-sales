@@ -1,4 +1,22 @@
+import { clearStoredToken, getStoredToken } from "../auth/tokenStorage";
+
 const API_BASE_PATH = "/api/v1";
+
+export interface AuthUser {
+  user_id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  roles: string[];
+}
+
+interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  user: AuthUser;
+}
 
 export interface Customer {
   customer_id: number;
@@ -146,16 +164,25 @@ export class ApiError extends Error {
 
 async function get<T>(path: string): Promise<T> {
   let response: Response;
+  const token = getStoredToken();
 
   try {
     response = await fetch(`${API_BASE_PATH}${path}`, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
   } catch {
     throw new ApiError(
       "Unable to connect to the CRM API. Make sure the FastAPI server is running.",
       0,
     );
+  }
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.dispatchEvent(new Event("auth:unauthorized"));
   }
 
   if (!response.ok) {
@@ -169,6 +196,35 @@ async function get<T>(path: string): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+async function postLogin(username: string, password: string): Promise<LoginResponse> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_PATH}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+  } catch {
+    throw new ApiError(
+      "Unable to connect to the CRM API. Make sure the FastAPI server is running.",
+      0,
+    );
+  }
+
+  if (!response.ok) {
+    const fallbackMessage = `Login failed (${response.status}).`;
+    const payload: unknown = await response.json().catch(() => null);
+    const detail =
+      typeof payload === "object" && payload !== null && "detail" in payload
+        ? String(payload.detail)
+        : fallbackMessage;
+    throw new ApiError(detail, response.status);
+  }
+
+  return response.json() as Promise<LoginResponse>;
 }
 
 const OPPORTUNITIES_PAGE_SIZE = 100;
@@ -241,6 +297,7 @@ async function getAllActivities(): Promise<Activity[]> {
 }
 
 export const crmApi = {
+  login: (username: string, password: string) => postLogin(username, password),
   getCustomers: () => get<CustomersResponse>("/customers/"),
   getCustomer: (customerId: number) => get<CustomerDetail>(`/customers/${customerId}`),
   getPipelineSummary: () => get<PipelineSummary>("/opportunities/pipeline/summary"),
