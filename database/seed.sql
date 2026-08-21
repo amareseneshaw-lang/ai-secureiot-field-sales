@@ -887,6 +887,35 @@ SELECT
 FROM sites
 WHERE site_name = 'Summit Distribution Center';
 
+INSERT INTO devices
+(
+    site_id,
+    device_name,
+    device_type,
+    manufacturer,
+    model,
+    serial_number,
+    firmware_version,
+    status,
+    health_status,
+    last_seen_at,
+    installed_at
+)
+SELECT
+    site_id,
+    'Pinecrest Lobby Camera 01',
+    'CAMERA',
+    'DemoIoT',
+    'CAM-200',
+    'DEMO-IOT-005',
+    '3.0.2',
+    'OFFLINE',
+    'DEGRADED',
+    CURRENT_TIMESTAMP - INTERVAL '6 hours',
+    CURRENT_TIMESTAMP - INTERVAL '90 days'
+FROM sites
+WHERE site_name = 'Pinecrest Tower';
+
 -- =========================================================
 -- DEVICE TELEMETRY
 -- =========================================================
@@ -977,6 +1006,29 @@ SELECT
 FROM devices d
 WHERE d.serial_number = 'DEMO-IOT-002';
 
+INSERT INTO iot_events
+(
+    device_id,
+    site_id,
+    event_type,
+    severity,
+    event_timestamp,
+    description,
+    payload,
+    processed
+)
+SELECT
+    d.device_id,
+    d.site_id,
+    'TAMPER_DETECTED',
+    'HIGH',
+    CURRENT_TIMESTAMP - INTERVAL '2 hours',
+    'Possible tamper detected on warehouse door sensor.',
+    '{"tamper": true}',
+    FALSE
+FROM devices d
+WHERE d.serial_number = 'DEMO-IOT-004';
+
 -- =========================================================
 -- ACCESS EVENTS
 -- =========================================================
@@ -1034,6 +1086,33 @@ FROM doors d
 JOIN readers r ON r.door_id = d.door_id
 JOIN credentials c ON c.credential_identifier = 'CARD-DEMO-002'
 WHERE d.door_name = 'Server Room';
+
+INSERT INTO access_events
+(
+    door_id,
+    reader_id,
+    credential_id,
+    event_type,
+    result,
+    event_timestamp,
+    device_timestamp,
+    source,
+    metadata
+)
+SELECT
+    d.door_id,
+    r.reader_id,
+    c.credential_id,
+    'ACCESS_DENIED',
+    'DENIED',
+    CURRENT_TIMESTAMP - INTERVAL '3 hours',
+    CURRENT_TIMESTAMP - INTERVAL '3 hours',
+    'SIMULATOR',
+    '{"reason": "demo_failed_attempt_after_hours"}'
+FROM doors d
+JOIN readers r ON r.door_id = d.door_id
+JOIN credentials c ON c.credential_identifier = 'CARD-DEMO-002'
+WHERE d.door_name = 'Warehouse Entrance';
 
 -- =========================================================
 -- OPPORTUNITIES

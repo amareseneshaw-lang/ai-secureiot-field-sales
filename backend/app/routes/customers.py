@@ -12,6 +12,7 @@ from backend.app.routes.opportunities import (
     OPPORTUNITY_COLUMNS,
     _serialize_opportunity,
 )
+from backend.app.routes.sites import SITE_COLUMNS, _serialize_site
 
 
 router = APIRouter(
@@ -288,6 +289,53 @@ def list_customer_field_visits(
         "limit": limit,
         "offset": offset,
         "field_visits": field_visits,
+    }
+
+
+@router.get("/{customer_id}/sites/")
+def list_customer_sites(
+    customer_id: int,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            _require_customer(cursor, customer_id)
+            cursor.execute(
+                "SELECT COUNT(*) FROM sites WHERE customer_id = %s;",
+                (customer_id,),
+            )
+            total_count = cursor.fetchone()[0]
+            site_columns = ", ".join(f"s.{column.strip()}" for column in SITE_COLUMNS.strip().split(","))
+            cursor.execute(
+                f"""
+                SELECT
+                    {site_columns},
+                    COUNT(DISTINCT dv.device_id) AS device_count,
+                    COUNT(DISTINCT dv.device_id) FILTER (WHERE dv.status = 'OFFLINE')
+                        AS offline_device_count
+                FROM sites s
+                LEFT JOIN devices dv ON dv.site_id = s.site_id
+                WHERE s.customer_id = %s
+                GROUP BY s.site_id
+                ORDER BY s.site_id ASC
+                LIMIT %s OFFSET %s;
+                """,
+                (customer_id, limit, offset),
+            )
+            sites = []
+            for row in cursor.fetchall():
+                site = _serialize_site(row[:15])
+                site["device_count"] = row[15]
+                site["offline_device_count"] = row[16]
+                sites.append(site)
+
+    return {
+        "count": len(sites),
+        "total_count": total_count,
+        "limit": limit,
+        "offset": offset,
+        "sites": sites,
     }
 
 

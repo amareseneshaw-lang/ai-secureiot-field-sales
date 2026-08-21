@@ -223,6 +223,12 @@ tr.activity-row:hover { background: #fafcff; }
 .risk-badge--medium { background: #fff3e0; color: #9c6a12; }
 .risk-badge--high { background: #fdeaea; color: #b23b3b; }
 
+.offline-count { color: #b23b3b; font-size: .78rem; font-weight: 700; }
+.telemetry-heading { margin: 14px 0 8px; }
+
+.visit-item--clickable { cursor: pointer; border-radius: 10px; transition: background .15s ease; }
+.visit-item--clickable:hover { background: #f5f9ff; }
+
 @media (max-width: 760px) {
   .filters-row { flex-direction: column; align-items: stretch; }
   .metric-grid--quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }

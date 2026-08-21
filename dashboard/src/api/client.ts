@@ -152,6 +152,160 @@ interface OpportunitiesResponse {
   opportunities: Opportunity[];
 }
 
+export interface Site {
+  site_id: number;
+  customer_id: number;
+  site_name: string;
+  site_type: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  country: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: string;
+  assigned_technician_id: number | null;
+  created_at: string;
+  updated_at: string;
+  device_count?: number;
+  offline_device_count?: number;
+}
+
+interface SitesResponse {
+  count: number;
+  total_count: number;
+  limit: number;
+  offset: number;
+  sites: Site[];
+}
+
+export interface Building {
+  building_id: number;
+  site_id: number;
+  building_name: string;
+  building_type: string | null;
+  floor_count: number | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface BuildingsResponse {
+  count: number;
+  buildings: Building[];
+}
+
+export interface Device {
+  device_id: number;
+  site_id: number;
+  device_name: string;
+  device_type: string;
+  manufacturer: string | null;
+  model: string | null;
+  serial_number: string | null;
+  firmware_version: string | null;
+  status: string;
+  health_status: string;
+  last_seen_at: string | null;
+  installed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DevicesResponse {
+  count: number;
+  total_count: number;
+  limit: number;
+  offset: number;
+  devices: Device[];
+}
+
+export interface DeviceTelemetry {
+  telemetry_id: number;
+  device_id: number;
+  timestamp: string;
+  metric_name: string;
+  metric_value: number | null;
+  unit: string | null;
+  quality: string | null;
+}
+
+interface TelemetryResponse {
+  count: number;
+  telemetry: DeviceTelemetry[];
+}
+
+interface SiteDevicesResponse {
+  count: number;
+  devices: Device[];
+}
+
+export type SecurityEventSeverity = "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type SecurityEventStatus = "OPEN" | "RESOLVED";
+export type SecurityEventSource = "IOT" | "ACCESS" | "DEVICE_STATUS";
+
+export interface SecurityEvent {
+  source: SecurityEventSource;
+  source_id: number;
+  device_id: number | null;
+  site_id: number | null;
+  event_type: string;
+  severity: SecurityEventSeverity;
+  status: SecurityEventStatus;
+  event_timestamp: string;
+  description: string | null;
+}
+
+interface SecurityEventsResponse {
+  count: number;
+  total_count: number;
+  limit: number;
+  offset: number;
+  security_events: SecurityEvent[];
+}
+
+export interface SecurityEventsSummary {
+  open_count: number;
+  critical_open_count: number;
+  breakdown: { severity: SecurityEventSeverity; status: SecurityEventStatus; count: number }[];
+}
+
+export interface Door {
+  door_id: number;
+  building_id: number;
+  door_name: string;
+  door_type: string | null;
+  location_description: string | null;
+  status: string;
+  controller_id: number | null;
+  reader: {
+    reader_id: number;
+    reader_name: string;
+    reader_type: string | null;
+    status: string;
+  } | null;
+}
+
+interface DoorsResponse {
+  count: number;
+  doors: Door[];
+}
+
+export type SecureIoTHealthStatus = "HEALTHY" | "AT_RISK" | "CRITICAL";
+
+export interface SecureIoTDashboardSummary {
+  total_sites: number;
+  total_devices: number;
+  online_devices: number;
+  offline_devices: number;
+  open_security_events: number;
+  critical_open_events: number;
+  health_score: number;
+  health_status: SecureIoTHealthStatus;
+  sites_with_open_events: { site_id: number; site_name: string; open_count: number }[];
+}
+
 export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
 export type DataSufficiency = "SUFFICIENT" | "LIMITED" | "INSUFFICIENT";
 
@@ -344,4 +498,25 @@ export const crmApi = {
     get<OpportunityInsight>(`/ai/opportunities/${opportunityId}/insight`),
   getCustomerAiSummary: (customerId: number) =>
     get<CustomerAiSummary>(`/ai/customers/${customerId}/summary`),
+  getSites: () => get<SitesResponse>("/sites/?limit=100&offset=0"),
+  getSite: (siteId: number) => get<Site>(`/sites/${siteId}`),
+  getSiteBuildings: (siteId: number) =>
+    get<BuildingsResponse>(`/sites/${siteId}/buildings/`),
+  getCustomerSites: (customerId: number) =>
+    get<SitesResponse>(`/customers/${customerId}/sites/?limit=100&offset=0`),
+  getDevices: () => get<DevicesResponse>("/devices/?limit=100&offset=0"),
+  getDevice: (deviceId: number) => get<Device>(`/devices/${deviceId}`),
+  getDeviceTelemetry: (deviceId: number) =>
+    get<TelemetryResponse>(`/devices/${deviceId}/telemetry/?limit=20`),
+  getSiteDevices: (siteId: number) =>
+    get<SiteDevicesResponse>(`/sites/${siteId}/devices/`),
+  getSiteDoors: (siteId: number) => get<DoorsResponse>(`/sites/${siteId}/doors/`),
+  getSecurityEvents: (siteId?: number) =>
+    get<SecurityEventsResponse>(
+      `/security-events/?limit=100&offset=0${siteId !== undefined ? `&site_id=${siteId}` : ""}`,
+    ),
+  getSecurityEventsSummary: () =>
+    get<SecurityEventsSummary>("/security-events/summary"),
+  getSecureIoTDashboardSummary: () =>
+    get<SecureIoTDashboardSummary>("/secureiot/dashboard/summary"),
 };

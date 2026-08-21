@@ -10,6 +10,7 @@ import {
   type FieldVisit,
   type NumericValue,
   type Opportunity,
+  type Site,
 } from "../api/client";
 import { AIInsightCard } from "../components/AIInsightCard";
 
@@ -21,6 +22,7 @@ type Customer360Data = {
   opportunities: Opportunity[];
   fieldVisits: FieldVisit[];
   activities: Activity[];
+  sites: Site[];
 };
 
 function formatLabel(value: string): string {
@@ -99,13 +101,19 @@ export function Customer360Page({ customerId }: Customer360PageProps) {
         return;
       }
 
-      const [contactsResponse, opportunitiesResponse, fieldVisitsResponse, activitiesResponse] =
-        await Promise.all([
-          crmApi.getCustomerContacts(customerId),
-          crmApi.getCustomerOpportunities(customerId),
-          crmApi.getCustomerFieldVisits(customerId),
-          crmApi.getCustomerActivities(customerId),
-        ]);
+      const [
+        contactsResponse,
+        opportunitiesResponse,
+        fieldVisitsResponse,
+        activitiesResponse,
+        sitesResponse,
+      ] = await Promise.all([
+        crmApi.getCustomerContacts(customerId),
+        crmApi.getCustomerOpportunities(customerId),
+        crmApi.getCustomerFieldVisits(customerId),
+        crmApi.getCustomerActivities(customerId),
+        crmApi.getCustomerSites(customerId),
+      ]);
 
       setData({
         customer: customerDetail,
@@ -113,6 +121,7 @@ export function Customer360Page({ customerId }: Customer360PageProps) {
         opportunities: opportunitiesResponse.opportunities,
         fieldVisits: fieldVisitsResponse.field_visits,
         activities: activitiesResponse.activities,
+        sites: sitesResponse.sites,
       });
       setLoadState("ready");
     } catch (error) {
@@ -387,6 +396,61 @@ export function Customer360Page({ customerId }: Customer360PageProps) {
                           <strong>Follow-up:</strong> {formatDate(visit.follow_up_date)}
                         </p>
                       )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="dashboard-panel" aria-labelledby="customer-sites-title">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">SecureIoT</p>
+                <h2 id="customer-sites-title">Sites</h2>
+              </div>
+              <span className="panel-count">{data.sites.length}</span>
+            </div>
+            {data.sites.length === 0 ? (
+              <div className="panel-empty">No SecureIoT sites recorded for this account.</div>
+            ) : (
+              <div className="visit-list">
+                {data.sites.map((site) => (
+                  <article
+                    className="visit-item visit-item--clickable"
+                    key={site.site_id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      window.location.hash = `#sites/${site.site_id}`;
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        window.location.hash = `#sites/${site.site_id}`;
+                      }
+                    }}
+                  >
+                    <div className="visit-date">
+                      <strong>{site.site_name}</strong>
+                      <span>{site.site_type ?? "Site"}</span>
+                    </div>
+                    <div>
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        <span className={`status-badge status-badge--${site.status.toLowerCase()}`}>
+                          {site.status}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Devices:</strong> {site.device_count ?? 0}
+                        {(site.offline_device_count ?? 0) > 0 && (
+                          <span className="offline-count"> ({site.offline_device_count} offline)</span>
+                        )}
+                      </p>
+                      <p className="follow-up">
+                        <strong>View site 360 →</strong>
+                      </p>
                     </div>
                   </article>
                 ))}
