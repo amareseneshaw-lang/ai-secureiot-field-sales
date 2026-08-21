@@ -7,6 +7,7 @@ import { CustomersPage } from "./pages/CustomersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { FieldVisitsPage } from "./pages/FieldVisitsPage";
 import { OpportunitiesPage } from "./pages/OpportunitiesPage";
+import { ReportsPage } from "./pages/ReportsPage";
 
 type Route =
   | { page: "dashboard" }
@@ -14,6 +15,7 @@ type Route =
   | { page: "opportunities" }
   | { page: "field-visits" }
   | { page: "activities" }
+  | { page: "reports" }
   | { page: "customer360"; customerId: number };
 
 function currentRoute(): Route {
@@ -27,6 +29,7 @@ function currentRoute(): Route {
   if (hash === "#opportunities") return { page: "opportunities" };
   if (hash === "#field-visits") return { page: "field-visits" };
   if (hash === "#activities") return { page: "activities" };
+  if (hash === "#reports") return { page: "reports" };
   if (hash === "#customers") return { page: "customers" };
   return { page: "dashboard" };
 }
@@ -48,6 +51,7 @@ export default function App() {
       {route.page === "opportunities" && <OpportunitiesPage />}
       {route.page === "field-visits" && <FieldVisitsPage />}
       {route.page === "activities" && <ActivitiesPage />}
+      {route.page === "reports" && <ReportsPage />}
       {route.page === "customer360" && <Customer360Page customerId={route.customerId} />}
       {route.page === "dashboard" && <DashboardPage />}
     </AppShell>
