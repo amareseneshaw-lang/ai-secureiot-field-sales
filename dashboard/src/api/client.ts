@@ -31,6 +31,23 @@ export interface PipelineSummary {
   };
 }
 
+export interface Opportunity {
+  opportunity_id: number;
+  customer_id: number;
+  site_id: number | null;
+  name: string;
+  description: string | null;
+  sales_stage: string;
+  estimated_value: NumericValue | null;
+  probability: NumericValue | null;
+  expected_close_date: string | null;
+  sales_rep_id: number | null;
+  competitor: string | null;
+  priority: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Activity {
   activity_id: number;
   customer_id: number | null;
@@ -78,6 +95,14 @@ interface FieldVisitsResponse {
   field_visits: FieldVisit[];
 }
 
+interface OpportunitiesResponse {
+  count: number;
+  total_count: number;
+  limit: number;
+  offset: number;
+  opportunities: Opportunity[];
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -115,9 +140,33 @@ async function get<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+const OPPORTUNITIES_PAGE_SIZE = 100;
+const OPPORTUNITIES_MAX_PAGES = 20;
+
+async function getAllOpportunities(): Promise<Opportunity[]> {
+  const opportunities: Opportunity[] = [];
+  let offset = 0;
+
+  for (let page = 0; page < OPPORTUNITIES_MAX_PAGES; page += 1) {
+    const response = await get<OpportunitiesResponse>(
+      `/opportunities/?limit=${OPPORTUNITIES_PAGE_SIZE}&offset=${offset}`,
+    );
+    opportunities.push(...response.opportunities);
+
+    if (opportunities.length >= response.total_count || response.opportunities.length === 0) {
+      break;
+    }
+
+    offset += OPPORTUNITIES_PAGE_SIZE;
+  }
+
+  return opportunities;
+}
+
 export const crmApi = {
   getCustomers: () => get<CustomersResponse>("/customers/"),
   getPipelineSummary: () => get<PipelineSummary>("/opportunities/pipeline/summary"),
+  getOpportunities: () => getAllOpportunities(),
   getRecentActivities: () =>
     get<ActivitiesResponse>("/activities/?limit=5&offset=0"),
   getRecentFieldVisits: () =>

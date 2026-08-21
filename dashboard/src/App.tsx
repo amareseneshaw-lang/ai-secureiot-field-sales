@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { AppShell } from "./components/AppShell";
 import { CustomersPage } from "./pages/CustomersPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { OpportunitiesPage } from "./pages/OpportunitiesPage";
 
-type Page = "dashboard" | "customers";
+type Page = "dashboard" | "customers" | "opportunities";
 
 function currentPage(): Page {
-  return window.location.hash === "#customers" ? "customers" : "dashboard";
+  if (window.location.hash === "#customers") return "customers";
+  if (window.location.hash === "#opportunities") return "opportunities";
+  return "dashboard";
 }
 
 export default function App() {
@@ -21,7 +24,9 @@ export default function App() {
 
   return (
     <AppShell activePage={page}>
-      {page === "customers" ? <CustomersPage /> : <DashboardPage />}
+      {page === "customers" && <CustomersPage />}
+      {page === "opportunities" && <OpportunitiesPage />}
+      {page === "dashboard" && <DashboardPage />}
     </AppShell>
   );
 }

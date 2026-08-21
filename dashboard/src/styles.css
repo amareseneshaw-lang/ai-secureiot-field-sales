@@ -110,7 +110,41 @@ tbody tr:hover { background: #fafcff; }
 .visit-date span { color: #71819a; font-size: .68rem; line-height: 1.35; }
 .follow-up { color: #27705e !important; }
 
+.visually-hidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+.stage-row--clickable { border-radius: 10px; cursor: pointer; transition: background .15s ease; }
+.stage-row--clickable:hover { background: #f5f9ff; }
+.stage-row--active { background: #eaf2ff; }
+
+.toolbar-card { padding-bottom: 4px; }
+.filters-row { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 24px 20px; }
+.search-field { flex: 1 1 220px; min-width: 200px; position: relative; }
+.search-field input { background: #f8fafd; border: 1px solid #d9e2f0; border-radius: 8px; color: #25364f; font-size: .87rem; padding: 10px 12px; width: 100%; }
+.search-field input:focus { border-color: #2d79c8; outline: none; }
+.filter-select { background: #f8fafd; border: 1px solid #d9e2f0; border-radius: 8px; color: #25364f; font-size: .85rem; padding: 10px 12px; }
+.filter-select:focus { border-color: #2d79c8; outline: none; }
+
+.stage-badge { border-radius: 999px; display: inline-block; font-size: .69rem; font-weight: 800; letter-spacing: .03em; padding: 5px 9px; white-space: nowrap; }
+.stage-badge--open { background: #e8f1ff; color: #2968b8; }
+.stage-badge--won { background: #e4f7ee; color: #197b54; }
+.stage-badge--lost { background: #f4e9e9; color: #a54f4f; }
+
+.priority-badge { border-radius: 999px; display: inline-block; font-size: .69rem; font-weight: 800; letter-spacing: .03em; padding: 5px 9px; }
+.priority-badge--high { background: #fdeaea; color: #b23b3b; }
+.priority-badge--medium { background: #fff3e0; color: #9c6a12; }
+.priority-badge--low { background: #eef3fb; color: #517097; }
+.priority-badge--default { background: #edf0f5; color: #55647b; }
+
+tr.opportunity-row { cursor: pointer; }
+tr.opportunity-row:hover { background: #fafcff; }
+.opportunity-detail-row td { background: #f8fafd; border-top: 0; padding: 0 24px 20px; }
+.opportunity-detail { display: grid; gap: 10px 28px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-top: 4px; }
+.opportunity-detail dt { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.opportunity-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
+
 @media (max-width: 760px) {
+  .filters-row { flex-direction: column; align-items: stretch; }
+
   .app-shell { display: block; }
   .sidebar { min-height: auto; padding: 14px 16px; }
   .brand { margin: 0 0 15px; }
