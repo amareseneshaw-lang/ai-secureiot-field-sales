@@ -184,7 +184,7 @@ export function Customer360Page({ customerId }: Customer360PageProps) {
             <strong>Customer #{customerId} was not found</strong>
             <p>This account may have been removed or the link may be incorrect.</p>
           </div>
-          <a className="secondary-button" href="#customers">
+          <a className="back-link" href="#customers">
             Back to Customers
           </a>
         </div>
