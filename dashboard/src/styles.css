@@ -162,6 +162,18 @@ tr.customer-row:hover { background: #fafcff; }
 
 .not-found-icon { color: #8fa2c0; font-size: 2.2rem; }
 
+.visit-type-badge { background: #e8f1ff; border-radius: 999px; color: #2968b8; display: inline-block; font-size: .69rem; font-weight: 800; letter-spacing: .03em; padding: 5px 9px; white-space: nowrap; }
+
+.table-link { color: #1d5eab; font-weight: 700; text-decoration: none; }
+.table-link:hover { text-decoration: underline; }
+
+tr.visit-row { cursor: pointer; }
+tr.visit-row:hover { background: #fafcff; }
+.visit-detail-row td { background: #f8fafd; border-top: 0; padding: 0 24px 20px; }
+.visit-detail { display: grid; gap: 10px 28px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-top: 4px; }
+.visit-detail dt { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.visit-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
+
 @media (max-width: 760px) {
   .filters-row { flex-direction: column; align-items: stretch; }
   .metric-grid--quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }

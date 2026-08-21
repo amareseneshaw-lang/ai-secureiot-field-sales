@@ -194,11 +194,35 @@ async function getAllOpportunities(): Promise<Opportunity[]> {
   return opportunities;
 }
 
+const FIELD_VISITS_PAGE_SIZE = 100;
+const FIELD_VISITS_MAX_PAGES = 20;
+
+async function getAllFieldVisits(): Promise<FieldVisit[]> {
+  const fieldVisits: FieldVisit[] = [];
+  let offset = 0;
+
+  for (let page = 0; page < FIELD_VISITS_MAX_PAGES; page += 1) {
+    const response = await get<FieldVisitsResponse>(
+      `/field-visits/?limit=${FIELD_VISITS_PAGE_SIZE}&offset=${offset}`,
+    );
+    fieldVisits.push(...response.field_visits);
+
+    if (fieldVisits.length >= response.total_count || response.field_visits.length === 0) {
+      break;
+    }
+
+    offset += FIELD_VISITS_PAGE_SIZE;
+  }
+
+  return fieldVisits;
+}
+
 export const crmApi = {
   getCustomers: () => get<CustomersResponse>("/customers/"),
   getCustomer: (customerId: number) => get<CustomerDetail>(`/customers/${customerId}`),
   getPipelineSummary: () => get<PipelineSummary>("/opportunities/pipeline/summary"),
   getOpportunities: () => getAllOpportunities(),
+  getFieldVisits: () => getAllFieldVisits(),
   getRecentActivities: () =>
     get<ActivitiesResponse>("/activities/?limit=5&offset=0"),
   getRecentFieldVisits: () =>
