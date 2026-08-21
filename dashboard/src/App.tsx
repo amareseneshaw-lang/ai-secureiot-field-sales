@@ -1,32 +1,47 @@
 import { useEffect, useState } from "react";
 
 import { AppShell } from "./components/AppShell";
+import { Customer360Page } from "./pages/Customer360Page";
 import { CustomersPage } from "./pages/CustomersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { OpportunitiesPage } from "./pages/OpportunitiesPage";
 
-type Page = "dashboard" | "customers" | "opportunities";
+type Route =
+  | { page: "dashboard" }
+  | { page: "customers" }
+  | { page: "opportunities" }
+  | { page: "customer360"; customerId: number };
 
-function currentPage(): Page {
-  if (window.location.hash === "#customers") return "customers";
-  if (window.location.hash === "#opportunities") return "opportunities";
-  return "dashboard";
+function currentRoute(): Route {
+  const hash = window.location.hash;
+
+  const customerMatch = hash.match(/^#customers\/(\d+)$/);
+  if (customerMatch) {
+    return { page: "customer360", customerId: Number(customerMatch[1]) };
+  }
+
+  if (hash === "#opportunities") return { page: "opportunities" };
+  if (hash === "#customers") return { page: "customers" };
+  return { page: "dashboard" };
 }
 
 export default function App() {
-  const [page, setPage] = useState<Page>(currentPage);
+  const [route, setRoute] = useState<Route>(currentRoute);
 
   useEffect(() => {
-    const updatePage = () => setPage(currentPage());
-    window.addEventListener("hashchange", updatePage);
-    return () => window.removeEventListener("hashchange", updatePage);
+    const updateRoute = () => setRoute(currentRoute());
+    window.addEventListener("hashchange", updateRoute);
+    return () => window.removeEventListener("hashchange", updateRoute);
   }, []);
 
+  const activePage = route.page === "customer360" ? "customers" : route.page;
+
   return (
-    <AppShell activePage={page}>
-      {page === "customers" && <CustomersPage />}
-      {page === "opportunities" && <OpportunitiesPage />}
-      {page === "dashboard" && <DashboardPage />}
+    <AppShell activePage={activePage}>
+      {route.page === "customers" && <CustomersPage />}
+      {route.page === "opportunities" && <OpportunitiesPage />}
+      {route.page === "customer360" && <Customer360Page customerId={route.customerId} />}
+      {route.page === "dashboard" && <DashboardPage />}
     </AppShell>
   );
 }

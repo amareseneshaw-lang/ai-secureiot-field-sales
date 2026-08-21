@@ -13,6 +13,37 @@ interface CustomersResponse {
     customers: Customer[];
 }
 
+export interface CustomerNotFound {
+  error: string;
+  customer_id: number;
+}
+
+export type CustomerDetail = Customer | CustomerNotFound;
+
+export function isCustomerNotFound(detail: CustomerDetail): detail is CustomerNotFound {
+  return "error" in detail;
+}
+
+export interface Contact {
+  contact_id: number;
+  customer_id: number;
+  first_name: string;
+  last_name: string;
+  job_title: string | null;
+  email: string | null;
+  phone: string | null;
+  contact_type: string | null;
+  is_primary: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ContactsResponse {
+  count: number;
+  total_count: number;
+  contacts: Contact[];
+}
+
 export type NumericValue = number | string;
 
 export interface PipelineStage {
@@ -165,10 +196,19 @@ async function getAllOpportunities(): Promise<Opportunity[]> {
 
 export const crmApi = {
   getCustomers: () => get<CustomersResponse>("/customers/"),
+  getCustomer: (customerId: number) => get<CustomerDetail>(`/customers/${customerId}`),
   getPipelineSummary: () => get<PipelineSummary>("/opportunities/pipeline/summary"),
   getOpportunities: () => getAllOpportunities(),
   getRecentActivities: () =>
     get<ActivitiesResponse>("/activities/?limit=5&offset=0"),
   getRecentFieldVisits: () =>
     get<FieldVisitsResponse>("/field-visits/?limit=5&offset=0"),
+  getCustomerContacts: (customerId: number) =>
+    get<ContactsResponse>(`/customers/${customerId}/contacts/?limit=100&offset=0`),
+  getCustomerOpportunities: (customerId: number) =>
+    get<OpportunitiesResponse>(`/customers/${customerId}/opportunities/?limit=100&offset=0`),
+  getCustomerFieldVisits: (customerId: number) =>
+    get<FieldVisitsResponse>(`/customers/${customerId}/field-visits/?limit=100&offset=0`),
+  getCustomerActivities: (customerId: number) =>
+    get<ActivitiesResponse>(`/customers/${customerId}/activities/?limit=100&offset=0`),
 };

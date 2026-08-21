@@ -105,7 +105,22 @@ export function CustomersPage() {
               </thead>
               <tbody>
                 {customers.map((customer) => (
-                  <tr key={customer.customer_id}>
+                  <tr
+                    className="customer-row"
+                    key={customer.customer_id}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View ${customer.company_name} details`}
+                    onClick={() => {
+                      window.location.hash = `#customers/${customer.customer_id}`;
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        window.location.hash = `#customers/${customer.customer_id}`;
+                      }
+                    }}
+                  >
                     <td><strong>{customer.company_name}</strong></td>
                     <td>{customer.industry ?? "—"}</td>
                     <td>{formatEmployeeCount(customer.employee_count)}</td>
