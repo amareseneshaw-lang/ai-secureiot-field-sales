@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 type NavigationItem = {
   label: string;
   icon: string;
-  page?: "dashboard" | "customers" | "opportunities" | "field-visits";
+  page?: "dashboard" | "customers" | "opportunities" | "field-visits" | "activities";
 };
 
 const navigationItems: NavigationItem[] = [
@@ -11,13 +11,13 @@ const navigationItems: NavigationItem[] = [
   { label: "Customers", icon: "◉", page: "customers" },
   { label: "Opportunities", icon: "◌", page: "opportunities" },
   { label: "Field Visits", icon: "⌖", page: "field-visits" },
-  { label: "Activities", icon: "◷" },
+  { label: "Activities", icon: "◷", page: "activities" },
   { label: "Reports", icon: "▥" },
 ];
 
 interface AppShellProps {
   children: ReactNode;
-  activePage: "dashboard" | "customers" | "opportunities" | "field-visits";
+  activePage: "dashboard" | "customers" | "opportunities" | "field-visits" | "activities";
 }
 
 export function AppShell({ children, activePage }: AppShellProps) {

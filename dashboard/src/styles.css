@@ -172,6 +172,15 @@ tr.visit-row:hover { background: #fafcff; }
 .visit-detail-row td { background: #f8fafd; border-top: 0; padding: 0 24px 20px; }
 .visit-detail { display: grid; gap: 10px 28px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-top: 4px; }
 .visit-detail dt { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+
+.activity-type-badge { background: #e8f1ff; border-radius: 999px; color: #2968b8; display: inline-block; font-size: .69rem; font-weight: 800; letter-spacing: .03em; padding: 5px 9px; white-space: nowrap; }
+
+tr.activity-row { cursor: pointer; }
+tr.activity-row:hover { background: #fafcff; }
+.activity-detail-row td { background: #f8fafd; border-top: 0; padding: 0 24px 20px; }
+.activity-detail { display: grid; gap: 10px 28px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-top: 4px; }
+.activity-detail dt { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.activity-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
 .visit-detail dd { color: #34455e; font-size: .87rem; margin: 4px 0 0; }
 
 @media (max-width: 760px) {

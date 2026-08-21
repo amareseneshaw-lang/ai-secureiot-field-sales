@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { ActivitiesPage } from "./pages/ActivitiesPage";
 import { AppShell } from "./components/AppShell";
 import { Customer360Page } from "./pages/Customer360Page";
 import { CustomersPage } from "./pages/CustomersPage";
@@ -12,6 +13,7 @@ type Route =
   | { page: "customers" }
   | { page: "opportunities" }
   | { page: "field-visits" }
+  | { page: "activities" }
   | { page: "customer360"; customerId: number };
 
 function currentRoute(): Route {
@@ -24,6 +26,7 @@ function currentRoute(): Route {
 
   if (hash === "#opportunities") return { page: "opportunities" };
   if (hash === "#field-visits") return { page: "field-visits" };
+  if (hash === "#activities") return { page: "activities" };
   if (hash === "#customers") return { page: "customers" };
   return { page: "dashboard" };
 }
@@ -44,6 +47,7 @@ export default function App() {
       {route.page === "customers" && <CustomersPage />}
       {route.page === "opportunities" && <OpportunitiesPage />}
       {route.page === "field-visits" && <FieldVisitsPage />}
+      {route.page === "activities" && <ActivitiesPage />}
       {route.page === "customer360" && <Customer360Page customerId={route.customerId} />}
       {route.page === "dashboard" && <DashboardPage />}
     </AppShell>

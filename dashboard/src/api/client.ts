@@ -217,12 +217,36 @@ async function getAllFieldVisits(): Promise<FieldVisit[]> {
   return fieldVisits;
 }
 
+const ACTIVITIES_PAGE_SIZE = 100;
+const ACTIVITIES_MAX_PAGES = 20;
+
+async function getAllActivities(): Promise<Activity[]> {
+  const activities: Activity[] = [];
+  let offset = 0;
+
+  for (let page = 0; page < ACTIVITIES_MAX_PAGES; page += 1) {
+    const response = await get<ActivitiesResponse>(
+      `/activities/?limit=${ACTIVITIES_PAGE_SIZE}&offset=${offset}`,
+    );
+    activities.push(...response.activities);
+
+    if (activities.length >= response.total_count || response.activities.length === 0) {
+      break;
+    }
+
+    offset += ACTIVITIES_PAGE_SIZE;
+  }
+
+  return activities;
+}
+
 export const crmApi = {
   getCustomers: () => get<CustomersResponse>("/customers/"),
   getCustomer: (customerId: number) => get<CustomerDetail>(`/customers/${customerId}`),
   getPipelineSummary: () => get<PipelineSummary>("/opportunities/pipeline/summary"),
   getOpportunities: () => getAllOpportunities(),
   getFieldVisits: () => getAllFieldVisits(),
+  getActivities: () => getAllActivities(),
   getRecentActivities: () =>
     get<ActivitiesResponse>("/activities/?limit=5&offset=0"),
   getRecentFieldVisits: () =>
