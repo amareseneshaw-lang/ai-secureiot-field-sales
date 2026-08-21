@@ -6,6 +6,7 @@ import {
   type NumericValue,
   type Opportunity,
 } from "../api/client";
+import { AIInsightCard } from "../components/AIInsightCard";
 
 type LoadState = "loading" | "ready" | "error";
 
@@ -458,6 +459,11 @@ export function OpportunitiesPage() {
                                     <dd>{formatDateTime(opportunity.updated_at)}</dd>
                                   </div>
                                 </dl>
+
+                                <AIInsightCard
+                                  variant="opportunity"
+                                  opportunityId={opportunity.opportunity_id}
+                                />
                               </td>
                             </tr>
                           )}

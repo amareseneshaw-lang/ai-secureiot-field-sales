@@ -11,6 +11,7 @@ import {
   type NumericValue,
   type Opportunity,
 } from "../api/client";
+import { AIInsightCard } from "../components/AIInsightCard";
 
 type LoadState = "loading" | "ready" | "error" | "not-found";
 
@@ -229,6 +230,8 @@ export function Customer360Page({ customerId }: Customer360PageProps) {
               </div>
             </dl>
           </section>
+
+          <AIInsightCard variant="customer" customerId={data.customer.customer_id} />
 
           <section className="metric-grid metric-grid--quad" aria-label="Customer 360 totals">
             <article className="metric-card">

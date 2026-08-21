@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from backend.app.routes.activities import router as activities_router
+from backend.app.routes.ai_insights import router as ai_insights_router
 from backend.app.routes.auth import router as auth_router
 from backend.app.routes.customers import router as customers_router
 from backend.app.routes.field_visits import router as field_visits_router
@@ -18,6 +19,7 @@ app.include_router(customers_router)
 app.include_router(field_visits_router)
 app.include_router(opportunities_router)
 app.include_router(activities_router)
+app.include_router(ai_insights_router)
 
 
 @app.get("/")

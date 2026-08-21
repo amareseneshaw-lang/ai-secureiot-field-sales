@@ -152,6 +152,30 @@ interface OpportunitiesResponse {
   opportunities: Opportunity[];
 }
 
+export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
+export type DataSufficiency = "SUFFICIENT" | "LIMITED" | "INSUFFICIENT";
+
+export interface OpportunityInsight {
+  risk_level: RiskLevel;
+  recommended_action: string;
+  reasoning: string[];
+  suggested_follow_up: string;
+  confidence: number;
+  data_sufficiency: DataSufficiency;
+  caveats: string[];
+}
+
+export interface CustomerAiSummary {
+  summary: string;
+  current_situation: string;
+  key_risks: string[];
+  key_opportunities: string[];
+  recommended_next_step: string;
+  confidence: number;
+  data_sufficiency: DataSufficiency;
+  caveats: string[];
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -316,4 +340,8 @@ export const crmApi = {
     get<FieldVisitsResponse>(`/customers/${customerId}/field-visits/?limit=100&offset=0`),
   getCustomerActivities: (customerId: number) =>
     get<ActivitiesResponse>(`/customers/${customerId}/activities/?limit=100&offset=0`),
+  getOpportunityInsight: (opportunityId: number) =>
+    get<OpportunityInsight>(`/ai/opportunities/${opportunityId}/insight`),
+  getCustomerAiSummary: (customerId: number) =>
+    get<CustomerAiSummary>(`/ai/customers/${customerId}/summary`),
 };

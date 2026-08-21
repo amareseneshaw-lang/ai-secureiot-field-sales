@@ -200,6 +200,29 @@ tr.activity-row:hover { background: #fafcff; }
 .login-submit { justify-self: stretch; margin-top: 6px; padding: 12px 14px; text-align: center; }
 .login-error { background: #fdeaea; border-radius: 8px; color: #a52a2a; font-size: .84rem; padding: 10px 12px; }
 
+.ai-insight-card { background: linear-gradient(135deg, #fff, #f7fbff); border: 1px solid #d9e6f7; border-radius: 14px; box-shadow: 0 8px 24px #233d6510; max-width: 720px; padding: 22px 24px; }
+.opportunity-detail + .ai-insight-card { margin-top: 18px; }
+.ai-insight-heading { align-items: center; display: flex; gap: 16px; justify-content: space-between; }
+.ai-insight-eyebrow { align-items: center; display: flex; gap: 8px; margin: 0; }
+.ai-badge { background: linear-gradient(135deg, #29d7b5, #3a80ef); border-radius: 6px; color: #fff; font-size: .64rem; font-weight: 800; letter-spacing: .04em; padding: 3px 6px; }
+.ai-insight-state { align-items: center; display: flex; gap: 14px; justify-content: space-between; padding: 16px 0 4px; }
+.ai-insight-state p { color: #60708a; font-size: .88rem; margin: 0; }
+.ai-insight-state--error p { color: #a52a2a; }
+.ai-insight-body { display: grid; gap: 12px; padding-top: 14px; }
+.ai-insight-summary { align-items: center; display: flex; gap: 12px; }
+.ai-confidence { color: #7b8aa0; font-size: .74rem; font-weight: 700; }
+.ai-insight-action, .ai-follow-up, .ai-current-situation { color: #34455e; font-size: .9rem; line-height: 1.5; margin: 0; }
+.ai-insight-action strong, .ai-follow-up strong, .ai-current-situation strong { color: #1a2a42; }
+.ai-reasoning-list { color: #4b5a72; font-size: .87rem; line-height: 1.6; margin: 0; padding-left: 20px; }
+.ai-insight-column { display: grid; gap: 4px; }
+.ai-column-label { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; margin: 0; text-transform: uppercase; }
+.ai-insight-notice { background: #fff8ea; border: 1px solid #f3e2b8; border-radius: 8px; color: #8a6a1f; font-size: .82rem; line-height: 1.5; padding: 10px 12px; }
+
+.risk-badge { border-radius: 999px; display: inline-block; font-size: .69rem; font-weight: 800; letter-spacing: .03em; padding: 5px 9px; }
+.risk-badge--low { background: #e4f7ee; color: #197b54; }
+.risk-badge--medium { background: #fff3e0; color: #9c6a12; }
+.risk-badge--high { background: #fdeaea; color: #b23b3b; }
+
 @media (max-width: 760px) {
   .filters-row { flex-direction: column; align-items: stretch; }
   .metric-grid--quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }

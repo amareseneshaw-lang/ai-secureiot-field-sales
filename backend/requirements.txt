@@ -3,3 +3,4 @@ uvicorn[standard]
 psycopg[binary]
 bcrypt
 pyjwt
+anthropic
