@@ -1,6 +1,6 @@
-fastapi
-uvicorn[standard]
-psycopg[binary]
-bcrypt
-pyjwt
-anthropic
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+psycopg[binary]==3.3.4
+bcrypt==5.0.0
+pyjwt==2.13.0
+anthropic==1.0.0

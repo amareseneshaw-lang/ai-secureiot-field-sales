@@ -1,0 +1,42 @@
+# Render Blueprint - see https://render.com/docs/blueprint-spec
+#
+# Defines exactly the architecture requested:
+#   Browser -> Render web service (Docker: React/Vite build + FastAPI /api/*, same origin)
+#           -> Managed PostgreSQL
+#
+# This file is infrastructure-as-code only - applying it (via "New +" > "Blueprint" in the
+# Render dashboard, pointed at this repo) is what actually provisions anything. Authoring
+# it here does not deploy or create any Render resources by itself.
+
+databases:
+  - name: ai-secureiot-db
+    databaseName: ai_secureiot
+    user: ai_secureiot
+    plan: free # raise to a paid plan before real production traffic - see docs/DEPLOYMENT.md
+
+services:
+  - type: web
+    name: ai-secureiot-field-sales
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free # raise to a paid plan for production - free instances spin down when idle
+    healthCheckPath: /health
+    # Render's Docker build uses this Dockerfile as-is; PORT is injected by Render at run
+    # time and read via the Dockerfile's `--port "${PORT:-8000}"` - no extra config needed.
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-secureiot-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true # Render generates a fresh random value on first deploy;
+        # this is exactly the "newly generated production secret" requirement - never a
+        # value copied from local dev, CI, or any other environment.
+      - key: ANTHROPIC_API_KEY
+        sync: false # optional - leave unset in the Render dashboard to run without the
+        # AI Insight feature; set it there (never in this file) to enable it.
+    # Applies database/schema.sql once, idempotently, before each deploy - available on
+    # paid plans. On the free plan, run `python -m scripts.init_db` manually once via the
+    # Render Shell after the first deploy instead (see docs/DEPLOYMENT.md).
+    preDeployCommand: python -m scripts.init_db

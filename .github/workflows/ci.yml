@@ -9,9 +9,26 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    # Throwaway CI-only credentials, scoped to the ephemeral postgres service container
+    # below - never valid outside this workflow run, and never to be reused as real
+    # dev/staging/production values (see .env.example).
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai_secureiot
+      DATABASE_URL: postgresql://postgres:ci-postgres-password@localhost:5432/ai_secureiot
       JWT_SECRET_KEY: ci-test-secret-key-not-for-production
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-postgres-password
+          POSTGRES_DB: ai_secureiot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +42,13 @@ jobs:
 
       - name: Import app (smoke test)
         run: python -c "import backend.app.main"
+
+      - name: Apply schema and demo seed data
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/schema.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/seed.sql
+        env:
+          PGPASSWORD: ci-postgres-password
 
       - name: Run tests
         run: |

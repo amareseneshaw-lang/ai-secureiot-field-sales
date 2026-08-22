@@ -1,5 +1,7 @@
 # Local environment configuration and credentials
 .env
+.env.*
+!.env.example
 
 # Python bytecode caches
 __pycache__/

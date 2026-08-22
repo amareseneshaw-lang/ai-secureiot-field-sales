@@ -1,0 +1,44 @@
+# For locally exercising the production-style same-origin image against a real
+# Postgres instance - NOT a deployment mechanism, and not started as part of any
+# automated process. Typical local use:
+#
+#   docker compose up --build
+#   docker compose exec app python -m scripts.init_db
+#
+# Provide real secrets via a local .env file (gitignored) referenced below, or
+# override individual values with `docker compose run -e ...`. Never commit real
+# values into this file.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your local .env}
+      POSTGRES_DB: ai_secureiot
+    ports:
+      - "5432:5432"
+    volumes:
+      - secureiot_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your local .env}@db:5432/ai_secureiot
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?set JWT_SECRET_KEY in your local .env}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
+volumes:
+  secureiot_db_data:

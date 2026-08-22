@@ -1,0 +1,20 @@
+# Never send secrets or local env config into the build context.
+.env
+.env.*
+!.env.example
+
+# Rebuilt inside the image - host copies are platform-specific/stale.
+**/node_modules/
+**/dist/
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+
+# Not needed in the image.
+.git/
+.github/
+tests/
+docs/
+reports/
+screenshots/
+*.md
