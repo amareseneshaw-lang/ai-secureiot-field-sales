@@ -350,19 +350,52 @@ only and must never be reused as real credentials in any other context.
 
 ## Screenshots
 
-No screenshots are currently checked into this repository. The sections below are
-placeholders for a portfolio presentation and should be filled in with real captures
-from the live demo before sharing this README externally.
+Captured directly from the live Render demo (see [Live Demo](#live-demo)), logged in as
+the `admin_demo` role.
 
-| Screenshot | Status |
-|---|---|
-| Main Dashboard | *Not yet added* |
-| Customers / Customer 360 | *Not yet added* |
-| Opportunities | *Not yet added* |
-| Field Visits | *Not yet added* |
-| SecureIoT Dashboard | *Not yet added* |
-| Security Events | *Not yet added* |
-| AI Sales Insight | *Not yet added* |
+### Main Dashboard
+
+![Main Dashboard](screenshots/dashboard.jpg)
+
+Pipeline totals, stage breakdown, recent activity, and recent field visits.
+
+### Customer 360
+
+![Customer 360](screenshots/customer-360.jpg)
+
+Unified account view: contacts, opportunities, field visits, activities, and the AI
+Customer Summary card.
+
+### Opportunities / Pipeline
+
+![Opportunities / Pipeline](screenshots/opportunities.jpg)
+
+Stage-by-stage pipeline breakdown and the full opportunity list.
+
+### Field Visits
+
+![Field Visits](screenshots/field-visits.jpg)
+
+Visit history with type, purpose, and follow-up tracking.
+
+### SecureIoT Dashboard
+
+![SecureIoT Dashboard](screenshots/secureiot-dashboard.jpg)
+
+Fleet-wide site, device, and security-event health across the install base.
+
+### Security Events
+
+![Security Events](screenshots/security-events.jpg)
+
+Event history showing HIGH and MEDIUM severity events (tamper detection, denied
+access) alongside resolved INFO-level events.
+
+### AI Sales Insight
+
+*Not yet added.* The live demo currently runs without `ANTHROPIC_API_KEY` configured
+(see [AI Architecture](#ai-architecture)), so a live capture would only show the
+graceful "not configured" state rather than a generated insight.
 
 ## Portfolio Highlights
 
