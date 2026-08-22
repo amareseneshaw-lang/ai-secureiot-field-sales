@@ -155,8 +155,9 @@ tr.customer-row:hover { background: #fafcff; }
 .customer-header-card .id-cell { font-size: .82rem; }
 
 .meta-grid { display: grid; gap: 14px 28px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 22px; }
+.meta-grid > div { min-width: 0; }
 .meta-grid dt { color: #7b8aa0; font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
-.meta-grid dd { color: #25364f; font-size: .92rem; margin: 5px 0 0; }
+.meta-grid dd { color: #25364f; font-size: .92rem; margin: 5px 0 0; overflow-wrap: anywhere; }
 
 .metric-grid--quad { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
