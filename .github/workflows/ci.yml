@@ -54,7 +54,7 @@ jobs:
         run: |
           if find tests -name 'test_*.py' -print -quit | grep -q .; then
             pip install pytest
-            pytest
+            python -m pytest
           else
             echo "No tests found, skipping."
           fi
