@@ -50,8 +50,8 @@ VALUES
     'admin_demo',
     'admin@example.invalid',
     '$2b$12$kbSlKguRArWaSyi0gOeQoOfT/QiZ0GNlzY99NyWAK4MQ6rzVK9KXa',
-    'Jordan',
-    'Reed',
+    'Amare',
+    'Seneshaw',
     '555-0101',
     'ACTIVE'
 ),
