@@ -36,7 +36,19 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false # optional - leave unset in the Render dashboard to run without the
         # AI Insight feature; set it there (never in this file) to enable it.
-    # Applies database/schema.sql once, idempotently, before each deploy - available on
-    # paid plans. On the free plan, run `python -m scripts.init_db` manually once via the
-    # Render Shell after the first deploy instead (see docs/DEPLOYMENT.md).
-    preDeployCommand: python -m scripts.init_db
+      - key: SEED_DEMO_DATA
+        sync: false # optional, off unless you set it - see "First deployment" in
+        # docs/DEPLOYMENT.md. Set to "true" in the Render dashboard's Environment tab,
+        # as a separate deliberate step AFTER the first deploy, to load
+        # database/seed.sql's FICTIONAL demo accounts/customers/sites/devices exactly
+        # once (backend/app/demo_seed.py). Leave unset/false for a deployment that
+        # holds, or will ever hold, real data - this variable is never set to "true"
+        # by this file itself.
+    # No preDeployCommand: that field requires a paid Render plan and is intentionally
+    # not used here (this deploys on the free plan, no billing). Instead, the app itself
+    # applies database/schema.sql idempotently on every startup (see the lifespan hook in
+    # backend/app/main.py / backend.app.database.initialize_schema) - this initializes a
+    # fresh database automatically on first deploy, with no manual step required, and is
+    # a no-op (not an error, not a re-apply) on every later restart once the schema
+    # exists. database/seed.sql is only ever applied via the explicit SEED_DEMO_DATA
+    # opt-in above, and even then only once (idempotent - see backend/app/demo_seed.py).

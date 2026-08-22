@@ -3,7 +3,9 @@
 # automated process. Typical local use:
 #
 #   docker compose up --build
-#   docker compose exec app python -m scripts.init_db
+#   # the app container applies database/schema.sql automatically on startup - no
+#   # manual step needed. To also load fictional demo data (never for real data):
+#   docker compose exec app python -m scripts.seed_demo_data
 #
 # Provide real secrets via a local .env file (gitignored) referenced below, or
 # override individual values with `docker compose run -e ...`. Never commit real

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from urllib.parse import urlparse
 
 import psycopg
@@ -50,3 +51,48 @@ DATABASE_URL = get_database_url()
 
 def get_connection():
     return psycopg.connect(DATABASE_URL)
+
+
+# --- Schema initialization -----------------------------------------------------
+#
+# Idempotent, non-destructive schema bootstrap - safe to call on every process
+# start. Used by backend.app.main's startup hook (so a fresh database is
+# initialized automatically on first deploy with no manual step and no reliance
+# on a paid-plan pre-deploy command) and by scripts/init_db.py (manual/local use).
+# Never applies database/seed.sql - demo data is never loaded automatically.
+
+SCHEMA_FILE = Path(__file__).resolve().parents[2] / "database" / "schema.sql"
+
+
+def schema_is_initialized() -> bool:
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT EXISTS (
+                    SELECT 1 FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'users'
+                );
+                """
+            )
+            row = cursor.fetchone()
+            return bool(row and row[0])
+
+
+def initialize_schema() -> bool:
+    """Applies database/schema.sql if it hasn't been applied yet.
+
+    Returns True if it applied the schema, False if it was already present (a
+    no-op skip, not an error) - never re-runs schema.sql against an existing
+    schema, so it never risks a destructive "relation already exists" failure
+    or any drop/alter of existing data.
+    """
+    if schema_is_initialized():
+        return False
+
+    schema_sql = SCHEMA_FILE.read_text(encoding="utf-8")
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(schema_sql)
+        connection.commit()
+    return True

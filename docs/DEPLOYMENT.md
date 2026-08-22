@@ -18,22 +18,45 @@ See `.env.example` for the full annotated list. Summary:
 | `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | No | Defaults to 60. |
 | `ANTHROPIC_API_KEY` | Only if using the AI Insight feature | Server-side only - never sent to the frontend. The rest of the API works without it. |
 | `AI_MODEL`, `AI_REQUEST_TIMEOUT_SECONDS` | No | Defaults are `claude-sonnet-5` / `20`. |
+| `SEED_DEMO_DATA` | No - **only for demo/portfolio deployments** | See "Schema and demo data initialization" below. Never set this for a deployment that holds, or will ever hold, real data. |
 
-**Never** apply `database/seed.sql` to a production database - it contains fictional
-demo accounts and passwords documented in `docs/AUTH_DEMO_CREDENTIALS.md` for local
-development only.
+## Schema and demo data initialization
 
-## Initializing a fresh production database
+Two independent, both-safe-by-default mechanisms, both in `backend/app/main.py`'s
+FastAPI lifespan hook (run on every process start, including Render free-tier
+spin-down/spin-up cycles):
+
+**1. Schema - always automatic, always safe.**
+`backend.app.database.initialize_schema()` applies `database/schema.sql` only if
+the `users` table doesn't already exist; otherwise it's a no-op. Never drops or
+alters anything. Runs unconditionally - no environment variable needed - so a brand
+new database is initialized on first boot with no manual step and no pre-deploy
+hook, working identically on Render's free plan and any paid plan.
+
+**2. Demo/portfolio seed data - opt-in, one-time, and clearly separated.**
+`backend.app.demo_seed.apply_demo_seed_data()` applies `database/seed.sql`
+(fictional accounts, customers, sites, devices, and events - see
+`docs/AUTH_DEMO_CREDENTIALS.md`) but **only when the `SEED_DEMO_DATA` environment
+variable is explicitly set to `true`**, and even then only if the `users` table is
+still empty. Deliberately kept in its own module, separate from schema
+initialization, so "always-safe real schema" and "opt-in fake demo data" can never
+be confused. Safety guarantees:
+- **Never applied by default.** Unset (the default on a fresh Render deploy from
+  `render.yaml`) means schema-only, zero rows, on every restart.
+- **Never duplicates.** If any row already exists in `users` - whether from a
+  previous run of this loader or real accounts created some other way - it does
+  nothing. Safe to leave `SEED_DEMO_DATA=true` set indefinitely; it only ever loads
+  data the first time.
+- **Never drops or overwrites anything.** `database/seed.sql` is exclusively
+  `INSERT` statements.
+
+Both paths are also available without starting the full app, e.g. for local setup
+or the `docker-compose.yml` workflow below:
 
 ```
-DATABASE_URL=postgresql://... python -m scripts.init_db
+DATABASE_URL=postgresql://... python -m scripts.init_db          # schema only
+DATABASE_URL=postgresql://... python -m scripts.seed_demo_data   # + demo data
 ```
-
-Applies `database/schema.sql` only. Safe to run on every deploy - if the schema is
-already present (detected by checking for the `users` table) it does nothing and exits
-cleanly, so it can be wired into a release/start hook without special-casing "first
-deploy vs. later deploys." Create real production user accounts separately; this script
-never touches seed data.
 
 ## Building and running the production image
 
@@ -62,10 +85,10 @@ architecture: one Docker web service (frontend + `/api/*` same-origin, per
 `backend/app/main.py`) plus one managed PostgreSQL database, wired together
 automatically.
 
-**Steps:**
+**First-deployment procedure:**
 1. In the Render dashboard: **New +** → **Blueprint** → point it at this repo/branch.
    Render reads `render.yaml` and proposes the `ai-secureiot-db` database and
-   `ai-secureiot-field-sales` web service.
+   `ai-secureiot-field-sales` web service, both on the **free** plan (no billing).
 2. Apply the blueprint. Render provisions the database first, then builds the web
    service from `Dockerfile`.
 3. `DATABASE_URL` is wired automatically (`fromDatabase: ai-secureiot-db` →
@@ -75,19 +98,25 @@ automatically.
 4. `JWT_SECRET_KEY` is generated automatically by Render (`generateValue: true`) on
    first deploy - a real, random, production-only secret, never a value from this
    repo, `.env`, or CI.
-5. `ANTHROPIC_API_KEY` is left unset by the blueprint (`sync: false`). To enable the
-   AI Insight feature, set it manually in the Render dashboard under the service's
-   **Environment** tab - it is never written to `render.yaml` or any other file.
-6. **Build command / start command**: not set separately - Render's `runtime: docker`
+5. On this first boot, the app's startup hook applies `database/schema.sql`
+   automatically (see "Schema and demo data initialization" above) - no action
+   needed, works on the free plan with no `preDeployCommand`.
+6. **This is a demo/portfolio deployment, so you'll usually want the demo data
+   visible.** In the web service's **Environment** tab, add `SEED_DEMO_DATA` = `true`,
+   then save. Render redeploys automatically; on that redeploy, the startup hook loads
+   `database/seed.sql` exactly once (empty-`users`-table guard - see above). Skip this
+   step entirely if you want an empty schema instead.
+7. *(Optional)* Add `ANTHROPIC_API_KEY` the same way in the **Environment** tab to
+   enable the AI Insight feature - left unset by the blueprint (`sync: false`), never
+   written to `render.yaml` or any other file.
+8. **Build command / start command**: not set separately - Render's `runtime: docker`
    builds `Dockerfile` directly, so the build command is Docker's own multi-stage
    build (`pnpm build` for the frontend, `pip install` for the backend) and the start
    command is the Dockerfile's `CMD` (`uvicorn ... --port "${PORT:-8000}"`, reading
    Render's dynamically assigned `PORT`).
-7. **Database schema**: `preDeployCommand: python -m scripts.init_db` in `render.yaml`
-   applies `database/schema.sql` before each deploy (paid-plan feature). On Render's
-   free plan, `preDeployCommand` isn't available - instead, after the first deploy,
-   open **Shell** on the web service in the Render dashboard and run
-   `python -m scripts.init_db` once by hand. Either way, `seed.sql` is never applied.
+
+No `preDeployCommand`, no Shell/SSH, and no step above requires anything beyond the
+Render dashboard's standard Environment tab - all compatible with the free plan.
 
 **Proxy headers on Render (resolved):** the `Dockerfile`'s `CMD` already sets
 `--forwarded-allow-ips='*'` alongside `--proxy-headers`. This is safe specifically on

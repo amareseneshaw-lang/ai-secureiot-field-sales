@@ -1,8 +1,11 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from backend.app.database import initialize_schema
+from backend.app.demo_seed import apply_demo_seed_data, demo_seed_requested
 from backend.app.routes.activities import router as activities_router
 from backend.app.routes.ai_insights import router as ai_insights_router
 from backend.app.routes.auth import router as auth_router
@@ -15,10 +18,29 @@ from backend.app.routes.security_events import router as security_events_router
 from backend.app.routes.sites import router as sites_router
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Idempotent and non-destructive (see backend.app.database.initialize_schema) -
+    # safe to run on every process start, including Render free-tier spin-down/
+    # spin-up cycles. This is what initializes a fresh production database on first
+    # deploy without needing a paid-plan pre-deploy command or a manual step.
+    initialize_schema()
+
+    # Fictional demo data only, and only when explicitly requested (see
+    # backend.app.demo_seed) - never applied by default, never applied if the
+    # database already has any user (so it is safe even if left enabled across
+    # restarts, and never overwrites real data).
+    if demo_seed_requested():
+        apply_demo_seed_data()
+
+    yield
+
+
 app = FastAPI(
     title="AI SecureIoT Field Sales Platform",
     description="Enterprise-style CRM, IoT, access-control, AI, and field-sales platform.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.include_router(auth_router)
